@@ -1,35 +1,49 @@
 import java.util.Random;
+import java.util.ArrayList;
 
 public class DeckOfCards {
-	public Card[] deck; // Array of Card object
-	public Random shuffler = new Random();
-	public int cardsInDeck;
+	private Card[] deck; // Array of Card object
+	private Random shuffler = new Random();
+	private int cardsInDeck;
 
 	public DeckOfCards(){
 		shuffle(); // Shuffle the deck upon first creating it
 	}
 
 	public void shuffle(){
-		int currentRank = 1;
-		int currentSuit = 0;
+		int currentRank = 1; // Rank of next card
+		int currentSuit = 0; // Suit of next card (0=H, 1=D, 2=C, 3=S)
+		int currentPositionIndex; //
 		int currentPosition;
+
+		ArrayList positionsEmpty = new ArrayList(); //
+
+		for(int i=0; i<52; i++){
+			positionsEmpty.add(i);
+		}
+
+		int executions = 0; // debugging
 
 		deck = new Card[52]; // Point deck variable to a new, empty array of Card objects
 		cardsInDeck = 0;
 
 		while(cardsInDeck<52){
-			currentPosition = shuffler.nextInt(52); // Choose a random spot in the deck in which to place the next card
+			executions++; // debugging
+			currentPositionIndex = shuffler.nextInt(52-cardsInDeck); // Choose a random spot in the deck, out of the remaining vacant spots, in which to place the next card
+			currentPosition = (int)positionsEmpty.get(currentPositionIndex);
 
-			if(deck[currentPosition] == null){
-				deck[currentPosition] = new Card(currentRank, currentSuit); // Put the next card in this position only if it is vacant
-				currentRank++; // Deal all hearts first (A up to K), then diamonds, clubs, spades
-				cardsInDeck++;
-				if(currentRank>13){ // Begin a new suit
-					currentRank = 1;
-					currentSuit++;
-				}
+			deck[currentPosition] = new Card(currentRank, currentSuit); // Put the next card in this position
+			positionsEmpty.remove(currentPositionIndex); // Remove this position from the remaining available ones
+			currentRank++; // Deal all hearts first (A up to K), then diamonds, clubs, spades
+			cardsInDeck++;
+			if(currentRank>13){ // Begin a new suit
+				currentRank = 1;
+				currentSuit++;
 			}
+
 		}
+
+		System.out.println(executions + " shuffle executions"); // debugging
 	}
 
 	public String deal(){
